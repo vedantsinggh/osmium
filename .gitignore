@@ -1,0 +1,7 @@
+build/
+*.o
+*.cpio
+*.gz
+*.img
+init
+
