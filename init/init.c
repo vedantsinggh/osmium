@@ -1,53 +1,46 @@
 #include <unistd.h>
+#include <string.h>
+#include "banner.h"
+#include <fcntl.h>
+#include <sys/mount.h>
+#include <sys/stat.h>
 
 void clear_screen() {
-    write(1, "\033[2J\033[H", 7);
+	write(1, "\033[2J\033[H", 7);
+}
+
+void mount_kernel_fs() {
+
+	mkdir("/proc", 0555);
+	mkdir("/sys", 0555);
+
+	mount("proc", "/proc", "proc", 0, 0);
+	mount("sysfs", "/sys", "sysfs", 0, 0);
+}
+
+void setup_console() {
+	int fd = open("/dev/console", O_RDWR);
+	if (fd < 0)
+		return;
+	dup2(fd, 0);
+	dup2(fd, 1);
+	dup2(fd, 2);
+	if (fd > 2)
+		close(fd);
 }
 
 void print_banner() {
-
-const char *banner =
-"\033[1;36m"
-" ______     ______     __    __     __     __  __     __    __    \n"
-"/\\  __ \\   /\\  ___\\   /\\ \"-./  \\   /\\ \\   /\\ \\/\\ \\   /\\ \"-./  \\   \n"
-"\\ \\ \\/\\ \\  \\ \\___  \\  \\ \\ \\-./\\ \\  \\ \\ \\  \\ \\ \\_\\ \\  \\ \\ \\-./\\ \\  \n"
-" \\ \\_____\\  \\/\\_____\\  \\ \\_\\ \\ \\_\\  \\ \\_\\  \\ \\_____\\  \\ \\_\\ \\ \\_\\ \n"
-"  \\/_____/   \\/_____/   \\/_/  \\/_/   \\/_/   \\/_____/   \\/_/  \\/_/ \n"
-"\033[0m"
-"\n"
-"\033[1;37m"
-"               O S M I U M   O S\n"
-"\033[0m"
-"\033[1;34m"
-"        Dense • Minimal • Experimental\n"
-"\033[0m\n";
-
-write(1, banner, sizeof(
-"\033[1;36m"
-" ______     ______     __    __     __     __  __     __    __    \n"
-"/\\  __ \\   /\\  ___\\   /\\ \"-./  \\   /\\ \\   /\\ \\/\\ \\   /\\ \"-./  \\   \n"
-"\\ \\ \\/\\ \\  \\ \\___  \\  \\ \\ \\-./\\ \\  \\ \\ \\  \\ \\ \\_\\ \\  \\ \\ \\-./\\ \\  \n"
-" \\ \\_____\\  \\/\\_____\\  \\ \\_\\ \\ \\_\\  \\ \\_\\  \\ \\_____\\  \\ \\_\\ \\ \\_\\ \n"
-"  \\/_____/   \\/_____/   \\/_/  \\/_/   \\/_/   \\/_____/   \\/_/  \\/_/ \n"
-"\033[0m"
-"\n"
-"\033[1;37m"
-"               O S M I U M   O S\n"
-"\033[0m"
-"\033[1;34m"
-"        Dense • Minimal • Experimental\n"
-"\033[0m\n"
-) - 1);
-
+	write(1, banner, strlen(banner));
 }
 
 int main() {
+	mount_kernel_fs();
+	setup_console();
 
-clear_screen();
 
-print_banner();
-write(1, "> hey", 5);
-
-while (1);
+	clear_screen();
+	print_banner();
+	write(1, "\n>", 2);
+	while (1);
 
 }

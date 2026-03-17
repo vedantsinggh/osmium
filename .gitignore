@@ -3,3 +3,5 @@ build/
 *.cpio
 *.gz
 *.img
+init/init
+rootfs/init
