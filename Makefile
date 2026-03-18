@@ -3,6 +3,7 @@ BUILD_DIR := build
 ROOTFS := rootfs
 
 INIT_BIN := init/init
+CELL_BIN := utils/cell/cell
 INITRAMFS := $(BUILD_DIR)/initramfs.cpio.gz
 KERNEL_IMAGE := $(KERNEL_DIR)/arch/x86/boot/bzImage
 
@@ -13,11 +14,15 @@ all: initramfs
 init:
 	$(MAKE) -C init
 
-rootfs: init
+cell:
+	$(MAKE) -C utils/cell
+
+rootfs: init cell
 	mkdir -p $(BUILD_DIR)/rootfs
 	rm -rf $(BUILD_DIR)/rootfs/*
 	cp -r $(ROOTFS)/* $(BUILD_DIR)/rootfs/ || true
 	cp $(INIT_BIN) $(BUILD_DIR)/rootfs/init
+	cp $(CELL_BIN) $(BUILD_DIR)/rootfs/bin
 
 initramfs: rootfs
 	cd $(BUILD_DIR)/rootfs && \
@@ -33,3 +38,4 @@ run: initramfs
 clean:
 	rm -rf $(BUILD_DIR)
 	$(MAKE) -C init clean
+	$(MAKE) -C cell clean

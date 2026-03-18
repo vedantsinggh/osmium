@@ -1,16 +1,19 @@
 #include <unistd.h>
 #include <string.h>
-#include "banner.h"
 #include <fcntl.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
+#include "banner.h"
+
+void print(char* text){
+	write(1, text, strlen(text));
+}
 
 void clear_screen() {
-	write(1, "\033[2J\033[H", 7);
+	print("\033[2J\033[H");
 }
 
 void mount_kernel_fs() {
-
 	mkdir("/proc", 0555);
 	mkdir("/sys", 0555);
 
@@ -29,18 +32,30 @@ void setup_console() {
 		close(fd);
 }
 
-void print_banner() {
-	write(1, banner, strlen(banner));
+void start_shell(){
+	int pid = fork();
+
+	if(pid == 0){
+		char *argv[] = {"/bin/cell", NULL};
+		execve("/bin/cell", argv, NULL);
+
+		print("Failed to start shell");
+		while(1);
+	}
+
+	while(1){
+		wait(NULL);
+	}
 }
 
 int main() {
 	mount_kernel_fs();
 	setup_console();
 
-
 	clear_screen();
-	print_banner();
-	write(1, "\n>", 2);
-	while (1);
+	print(banner);
+	
+	start_shell();
 
+	while (1);
 }
