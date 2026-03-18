@@ -35,6 +35,7 @@ void setup_console() {
 void start_shell(){
 	int pid = fork();
 
+	//child
 	if(pid == 0){
 		char *argv[] = {"/bin/cell", NULL};
 		execve("/bin/cell", argv, NULL);
