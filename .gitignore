@@ -3,7 +3,5 @@ build/
 *.cpio
 *.gz
 *.img
-init/init
-utils/cell/cell
-rootfs/init
-rootfs/bin/*
+rootfs
+rootfs

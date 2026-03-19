@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <dirent.h>
 
 #define TOK_DELIM " \t\r\n\a"
 
@@ -86,14 +87,31 @@ char** split_line(char* line){
 
 
 int launch(char** args){
+	struct dirent* entry;
+	DIR* dp = opendir("/bin");
+
+	if (dp == NULL){
+		print("can't read binaries!");
+		return 1;
+	}
+
+
 	pid_t pid, wpid;
 	int status;
 
 	pid = fork();
 	if (pid == 0){
-		if (execvp(args[0], args) == -1){
-			print("PANIK!");
+		while ((entry = readdir(dp)) != NULL){
+			if (strcmp(entry->d_name,args[0]) == 0){
+				closedir(dp);
+				if (execvp(args[0], args) == -1){
+					print("PANIK!");
+				}
+			}
 		}
+
+		closedir(dp);
+		print("Cant find any biaries!");
 		exit(-1);
 	} else if (pid < 0){
 		print("PANIK!");

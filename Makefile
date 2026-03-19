@@ -4,10 +4,11 @@ ROOTFS := rootfs
 
 INIT_BIN := init/init
 CELL_BIN := utils/cell/cell
+ECHO_BIN := utils/echo/echo
 INITRAMFS := $(BUILD_DIR)/initramfs.cpio.gz
 KERNEL_IMAGE := $(KERNEL_DIR)/arch/x86/boot/bzImage
 
-.PHONY: all init rootfs initramfs run clean
+.PHONY: all init cell echo rootfs initramfs run clean
 
 all: initramfs
 
@@ -17,12 +18,16 @@ init:
 cell:
 	$(MAKE) -C utils/cell
 
-rootfs: init cell
+echo:
+	$(MAKE) -C utils/echo
+
+rootfs: init cell echo
 	mkdir -p $(BUILD_DIR)/rootfs
 	rm -rf $(BUILD_DIR)/rootfs/*
 	cp -r $(ROOTFS)/* $(BUILD_DIR)/rootfs/ || true
-	cp $(INIT_BIN) $(BUILD_DIR)/rootfs/init
-	cp $(CELL_BIN) $(BUILD_DIR)/rootfs/bin
+	mv $(INIT_BIN) $(BUILD_DIR)/rootfs
+	mv $(CELL_BIN) $(BUILD_DIR)/rootfs/bin
+	mv $(ECHO_BIN) $(BUILD_DIR)/rootfs/bin
 
 initramfs: rootfs
 	cd $(BUILD_DIR)/rootfs && \
