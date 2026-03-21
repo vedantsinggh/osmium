@@ -1,8 +1,8 @@
-CC = gcc
-CFLAGS = -static -O2 -Wall
+CC = g++
+CFLAGS = -static -O2 -Wall -std=c++17 -pedantic
 
 TARGET = init
-SRC = init.c
+SRC = init.cpp
 
 all: $(TARGET)
 
