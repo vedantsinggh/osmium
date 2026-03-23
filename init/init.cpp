@@ -8,11 +8,12 @@
 #include <cerrno>
 #include <cstring>
 #include <string_view>
+#include <fstream>
+#include <string>
 
 #include "banner.h"
 
 namespace osmium {
-
 	void log(std::string_view msg) noexcept {
 		std::cout << msg;
 	}
@@ -44,6 +45,35 @@ namespace osmium {
 
 		safe_mount("proc", "/proc", "proc", 0);
 		safe_mount("sysfs", "/sys", "sysfs", 0);
+
+		struct stat st{};
+		if (stat("/proc/version", &st) != 0) {
+			panic("proc not mounted correctly");
+		}
+	}
+
+	void log_info(const std::string param) {
+		std::ifstream file("/proc/" + param);
+		if (!file) {
+			panic("failed to open /proc/");
+		}
+
+		std::string line;
+		std::getline(file, line);
+
+		if (line.empty()) {
+			panic("/proc/ is empty");
+		}
+
+		log("[KERNEL] " + line + "\n");
+	}
+
+	void log_all_info() noexcept {
+		log_info("meminfo");
+		log_info("cpuinfo");
+		log_info("version");
+		log_info("uptime");
+		log_info("mounts");
 	}
 
 	void setup_console() {
@@ -97,6 +127,7 @@ int main(void) {
 
 	clear_screen();
 	log(banner);
+	log_all_info();
 	
 	start_shell();
 }
