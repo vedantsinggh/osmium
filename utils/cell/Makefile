@@ -1,8 +1,8 @@
-CC = gcc
-CFLAGS = -static -O2 -Wall
+CC = g++
+CFLAGS = -static -std=c++17 -pedantic -O2 -Wall
 
 TARGET = cell
-SRC = cell.c
+SRC = cell.cpp
 
 all: $(TARGET)
 
