@@ -1,8 +1,8 @@
-CC = gcc
-CFLAGS = -static -O2 -Wall
+CC = g++
+CFLAGS = -static -std=c++17 -pedantic -O2 -Wall
 
 TARGET = echo
-SRC = echo.c
+SRC = echo.cpp
 
 all: $(TARGET)
 
