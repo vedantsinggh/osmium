@@ -38,7 +38,7 @@ run: initramfs
 	-kernel $(KERNEL_IMAGE) \
 	-initrd $(INITRAMFS) \
 	-nographic \
-	-append "console=ttyS0 rdinit=/init"
+	-append "console=ttyS0 rdinit=/init quiet loglevel=3"
 
 clean:
 	rm -rf $(BUILD_DIR)
